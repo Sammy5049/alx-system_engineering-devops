@@ -33,20 +33,25 @@ sudo cp /etc/haproxy/haproxy.cfg haproxy_default.backup
 server_config=\
 "
 defaults
+  log global
   mode http
-  timeout client 15s
-  timeout connect 10s
-  timeout server 15s
+  option  httplog
+  option  dontlognull
+  timeout client 50000
+  timeout connect 5000
+  timeout server 50000
   timeout http-request 10s
 
-frontend th3gr00t-tech-frontend
+frontend myapp
     bind *:80
-    default_backend th3gr00t-tech-backend
+    mode http
+    default_backend webservers
 
-backend th3gr00t-tech-backend
+backend webservers
+    mode http
     balance roundrobin
-    server 453-web-01 35.243.128.200:80 check
-    server 453-web-02 3.239.120.96:80 check
+    server web-01 54.174.113.81:80 check
+    server web-02 52.23.177.104:80 check
 "
 
 echo "$server_config" | sudo dd status=none of=/etc/haproxy/haproxy.cfg
